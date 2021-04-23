@@ -1,0 +1,43 @@
+syntax = "proto3";
+
+package article_service;
+
+import "google/protobuf/empty.proto";
+import "google/protobuf/wrappers.proto";
+import "google/protobuf/timestamp.proto";
+
+service ArticleService {
+  rpc GetArticle (GetArticleRequest) returns (Article);
+  rpc GetArticles (google.protobuf.Empty) returns (stream ArticleSummary);
+  rpc WriteArticle (WriteArticleRequest) returns (google.protobuf.BoolValue);
+  rpc SaveArticleAsDraft (SaveArticleAsDraftRequest) returns (google.protobuf.BoolValue);
+}
+
+// requests
+message SaveArticleAsDraftRequest {
+  int32 articleId = 1;
+}
+
+message GetArticleRequest {
+  int32 articleId = 1;
+}
+
+message WriteArticleRequest {
+  string body = 2;
+  string title = 1;
+  string coverImage = 3;
+}
+
+// responses
+message Article {
+  string body = 2;
+  string title = 1;
+  string coverImage = 3;
+  google.protobuf.Timestamp createdAt = 4;
+}
+
+message ArticleSummary {
+  string title = 1;
+  string excerpt = 2;
+  string coverImage = 3;
+}
