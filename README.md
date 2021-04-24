@@ -1,3 +1,7 @@
+# Prerequisites
+
+- Protocol buffer compiler `protoc` needs to be installed
+
 # Overview
 
 - The project will implement the following pattern, repository, factory, model, domain and services.

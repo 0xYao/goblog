@@ -1,3 +1,8 @@
-module github.com/0AlexZhong0/goblog
+module 0AlexZhong0/goblog
 
 go 1.16
+
+require (
+	google.golang.org/grpc v1.37.0
+	google.golang.org/protobuf v1.26.0
+)
