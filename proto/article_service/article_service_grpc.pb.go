@@ -23,7 +23,7 @@ type ArticleServiceClient interface {
 	GetArticle(ctx context.Context, in *GetArticleRequest, opts ...grpc.CallOption) (*Article, error)
 	GetArticles(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (ArticleService_GetArticlesClient, error)
 	WriteArticle(ctx context.Context, in *WriteArticleRequest, opts ...grpc.CallOption) (*wrapperspb.BoolValue, error)
-	SaveArticleAsDraft(ctx context.Context, in *SaveArticleAsDraftRequest, opts ...grpc.CallOption) (*wrapperspb.BoolValue, error)
+	SaveArticleAsDraft(ctx context.Context, in *WriteArticleRequest, opts ...grpc.CallOption) (*wrapperspb.BoolValue, error)
 }
 
 type articleServiceClient struct {
@@ -84,7 +84,7 @@ func (c *articleServiceClient) WriteArticle(ctx context.Context, in *WriteArticl
 	return out, nil
 }
 
-func (c *articleServiceClient) SaveArticleAsDraft(ctx context.Context, in *SaveArticleAsDraftRequest, opts ...grpc.CallOption) (*wrapperspb.BoolValue, error) {
+func (c *articleServiceClient) SaveArticleAsDraft(ctx context.Context, in *WriteArticleRequest, opts ...grpc.CallOption) (*wrapperspb.BoolValue, error) {
 	out := new(wrapperspb.BoolValue)
 	err := c.cc.Invoke(ctx, "/article_service.ArticleService/SaveArticleAsDraft", in, out, opts...)
 	if err != nil {
@@ -100,7 +100,7 @@ type ArticleServiceServer interface {
 	GetArticle(context.Context, *GetArticleRequest) (*Article, error)
 	GetArticles(*emptypb.Empty, ArticleService_GetArticlesServer) error
 	WriteArticle(context.Context, *WriteArticleRequest) (*wrapperspb.BoolValue, error)
-	SaveArticleAsDraft(context.Context, *SaveArticleAsDraftRequest) (*wrapperspb.BoolValue, error)
+	SaveArticleAsDraft(context.Context, *WriteArticleRequest) (*wrapperspb.BoolValue, error)
 	mustEmbedUnimplementedArticleServiceServer()
 }
 
@@ -117,7 +117,7 @@ func (UnimplementedArticleServiceServer) GetArticles(*emptypb.Empty, ArticleServ
 func (UnimplementedArticleServiceServer) WriteArticle(context.Context, *WriteArticleRequest) (*wrapperspb.BoolValue, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method WriteArticle not implemented")
 }
-func (UnimplementedArticleServiceServer) SaveArticleAsDraft(context.Context, *SaveArticleAsDraftRequest) (*wrapperspb.BoolValue, error) {
+func (UnimplementedArticleServiceServer) SaveArticleAsDraft(context.Context, *WriteArticleRequest) (*wrapperspb.BoolValue, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SaveArticleAsDraft not implemented")
 }
 func (UnimplementedArticleServiceServer) mustEmbedUnimplementedArticleServiceServer() {}
@@ -191,7 +191,7 @@ func _ArticleService_WriteArticle_Handler(srv interface{}, ctx context.Context, 
 }
 
 func _ArticleService_SaveArticleAsDraft_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(SaveArticleAsDraftRequest)
+	in := new(WriteArticleRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -203,7 +203,7 @@ func _ArticleService_SaveArticleAsDraft_Handler(srv interface{}, ctx context.Con
 		FullMethod: "/article_service.ArticleService/SaveArticleAsDraft",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ArticleServiceServer).SaveArticleAsDraft(ctx, req.(*SaveArticleAsDraftRequest))
+		return srv.(ArticleServiceServer).SaveArticleAsDraft(ctx, req.(*WriteArticleRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -235,5 +235,5 @@ var ArticleService_ServiceDesc = grpc.ServiceDesc{
 			ServerStreams: true,
 		},
 	},
-	Metadata: "proto/article_service.proto",
+	Metadata: "proto/article_service/article_service.proto",
 }

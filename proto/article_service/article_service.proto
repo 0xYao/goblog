@@ -12,16 +12,12 @@ service ArticleService {
   rpc GetArticle (GetArticleRequest) returns (Article);
   rpc GetArticles (google.protobuf.Empty) returns (stream ArticleSummary);
   rpc WriteArticle (WriteArticleRequest) returns (google.protobuf.BoolValue);
-  rpc SaveArticleAsDraft (SaveArticleAsDraftRequest) returns (google.protobuf.BoolValue);
+  rpc SaveArticleAsDraft (WriteArticleRequest) returns (google.protobuf.BoolValue);
 }
 
 // requests
-message SaveArticleAsDraftRequest {
-  int32 articleId = 1;
-}
-
 message GetArticleRequest {
-  int32 articleId = 1;
+  string articleId = 1;
 }
 
 message WriteArticleRequest {
@@ -32,10 +28,12 @@ message WriteArticleRequest {
 
 // responses
 message Article {
+  string id = 1;
   string body = 2;
-  string title = 1;
-  string coverImage = 3;
-  google.protobuf.Timestamp createdAt = 4;
+  string title = 3;
+  bool isDraft = 4;
+  string coverImage = 5;
+  google.protobuf.Timestamp createdAt = 6;
 }
 
 message ArticleSummary {
