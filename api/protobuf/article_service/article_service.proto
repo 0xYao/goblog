@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package article_service;
 
-option go_package = "0AlexZhong0/goblog/proto/article_service";
+option go_package = "0AlexZhong0/goblog/api/protobuf/article_service";
 
 import "google/protobuf/empty.proto";
 import "google/protobuf/wrappers.proto";

@@ -6,7 +6,7 @@ import (
 	"log"
 	"time"
 
-	pb "0AlexZhong0/goblog/proto/article_service"
+	pb "0AlexZhong0/goblog/api/protobuf/article_service"
 
 	"github.com/bxcodec/faker/v3"
 	"golang.org/x/net/context"
