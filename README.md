@@ -1,14 +1,18 @@
 # Prerequisites
 
-- Protocol buffer compiler `protoc` needs to be installed
+- Install the protocol buffer compiler `protoc`
 
 # Overview
 
 - The project will implement the following pattern, repository, factory, model, domain and services.
 
+# Questions
+
+- Not sure exactly sure what to put into the repository struct, should the signature be the same as the grpc service definition? Then that would be a unnecessary duplication, no?
+
 # TODO
 
-- Implement the MVRC patterns
+- Add UserService, reimplement the ArticleService so they interact with each other together (see how it is implemented in the WildWorkout project)
 - Deploy the services and write terraform code for it
 - Stage the client and the server
 - Create a PWA (NextJS)

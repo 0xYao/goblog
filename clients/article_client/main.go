@@ -6,7 +6,7 @@ import (
 	"log"
 	"time"
 
-	pb "0AlexZhong0/goblog/api/protobuf/article_service"
+	pb "0AlexZhong0/goblog/internal/generated/api/protobuf/article_service"
 
 	"github.com/bxcodec/faker/v3"
 	"golang.org/x/net/context"
@@ -15,7 +15,7 @@ import (
 )
 
 var (
-	serverAddr = flag.String("server_addr", "localhost:8080", "The server address in the format of host:port")
+	serverAddr = flag.String("server_addr", "localhost:50051", "The server address in the format of host:port")
 )
 
 func printArticle(client pb.ArticleServiceClient, articleId string) {
@@ -78,7 +78,11 @@ func generateFakeArticle() *pb.WriteArticleRequest {
 }
 
 func main() {
+	log.Println("Setting up the article client...")
+
 	conn, err := grpc.Dial(*serverAddr, grpc.WithInsecure(), grpc.WithBlock())
+
+	log.Printf("Dialing at %v\n", serverAddr)
 
 	if err != nil {
 		log.Fatalf("failed to dial: %v", err)
@@ -87,11 +91,12 @@ func main() {
 	defer conn.Close()
 	client := pb.NewArticleServiceClient(conn)
 
-	articleNums := 10
+	articleNums := 3
 
 	for i := 0; i < articleNums; i++ {
 		writeArticle(client, generateFakeArticle())
 	}
 
 	printArticles(client)
+	printArticle(client, "abcd")
 }

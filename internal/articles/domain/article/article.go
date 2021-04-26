@@ -38,6 +38,10 @@ func (a *Article) Body() string {
 	return a.body
 }
 
+func (a *Article) CreatedAt() time.Time {
+	return a.createdAt
+}
+
 // factory encapsulates the logic of creating domain objects
 type Factory struct{}
 
