@@ -1,0 +1,43 @@
+syntax = "proto3";
+
+package user_service;
+
+option go_package = "0AlexZhong0/goblog/api/protobuf/user_service";
+
+import "google/protobuf/wrappers.proto";
+
+service UserService {
+  rpc GetUser (GetUserRequest) returns (User);
+  rpc UpdateUser (UpdateUserRequest) returns (google.protobuf.BoolValue);
+  rpc DeleteUser (DeleteUserRequest) returns (google.protobuf.BoolValue);
+  rpc CreateUser (CreateUserRequest) returns (google.protobuf.BoolValue);
+}
+
+message GetUserRequest {
+  string id = 1;
+}
+
+message User {
+  string id = 1;
+  string avatar = 2;
+  string firstName = 3;
+  string lastName = 4;
+}
+
+message UpdateUserRequest {
+  string id = 1;
+  string avatar = 2;
+  string firstName = 3;
+  string lastName = 4;
+}
+
+message DeleteUserRequest {
+  string id = 1;
+}
+
+message CreateUserRequest {
+  string id = 1;
+  string avatar = 2;
+  string firstName = 3;
+  string lastName = 4;
+}

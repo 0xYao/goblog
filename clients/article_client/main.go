@@ -6,6 +6,7 @@ import (
 	"log"
 	"time"
 
+	"0AlexZhong0/goblog/internal/data"
 	pb "0AlexZhong0/goblog/internal/generated/api/protobuf/article_service"
 
 	"github.com/bxcodec/faker/v3"
@@ -73,7 +74,7 @@ func generateFakeArticle() *pb.WriteArticleRequest {
 	return &pb.WriteArticleRequest{
 		Title:      faker.Word(),
 		Body:       faker.Paragraph(),
-		CoverImage: faker.URL(),
+		CoverImage: data.RandomImageUrl,
 	}
 }
 
