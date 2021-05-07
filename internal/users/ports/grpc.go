@@ -6,6 +6,7 @@ import (
 	"0AlexZhong0/goblog/internal/users/domain/user"
 	"context"
 
+	"google.golang.org/protobuf/types/known/emptypb"
 	"google.golang.org/protobuf/types/known/wrapperspb"
 )
 
@@ -74,4 +75,25 @@ func (g *UserGrpcServer) DeleteUser(ctx context.Context, in *pb.DeleteUserReques
 	}
 
 	return &wrapperspb.BoolValue{Value: true}, nil
+}
+
+func (g *UserGrpcServer) UserExists(ctx context.Context, in *pb.UserExistsRequest) (*wrapperspb.BoolValue, error) {
+	err := g.app.Queries.UserExists.Handle(ctx, in.Id)
+	if err != nil {
+		return &wrapperspb.BoolValue{Value: false}, err
+	}
+
+	return &wrapperspb.BoolValue{Value: true}, nil
+}
+
+func (g *UserGrpcServer) GetUsers(_ *emptypb.Empty, stream pb.UserService_GetUsersServer) error {
+	users := g.app.Queries.GetUsers.Handle(context.TODO())
+
+	for _, user := range users {
+		if err := stream.Send(newPbUserFromUser(user)); err != nil {
+			return err
+		}
+	}
+
+	return nil
 }

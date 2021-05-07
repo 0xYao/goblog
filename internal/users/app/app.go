@@ -20,7 +20,9 @@ type Commands struct {
 }
 
 type Queries struct {
-	GetUser query.UserHandler
+	GetUser    query.UserHandler
+	GetUsers   query.UsersHandler
+	UserExists query.UserExistsHandler
 }
 
 func NewApplication(ctx context.Context) Application {
@@ -33,7 +35,9 @@ func NewApplication(ctx context.Context) Application {
 
 	return Application{
 		Queries: Queries{
-			GetUser: query.NewUserHandler(userRepo),
+			GetUser:    query.NewUserHandler(userRepo),
+			UserExists: query.NewUserExistsHandler(userRepo),
+			GetUsers:   query.NewUsersHandler(userRepo),
 		},
 		Commands: Commands{
 			CreateUser: command.NewCreateUserHandler(userRepo),

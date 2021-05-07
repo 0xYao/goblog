@@ -30,6 +30,7 @@ const (
 func newProtoArticle(a *article.Article) *pb.Article {
 	return &pb.Article{
 		Id:         uuid.NewString(),
+		UserId:     a.UserId(),
 		Body:       a.Body(),
 		Title:      a.Title(),
 		IsDraft:    a.IsDraft(),
@@ -44,6 +45,7 @@ func newArticleInputFromProtoWriteReq(in *pb.WriteArticleRequest, isDraft bool) 
 		Title:      in.Title,
 		IsDraft:    isDraft,
 		CoverImage: in.CoverImage,
+		UserId:     in.UserId,
 	}
 }
 

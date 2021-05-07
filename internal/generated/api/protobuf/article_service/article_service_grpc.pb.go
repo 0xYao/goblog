@@ -4,11 +4,11 @@ package article_service
 
 import (
 	context "context"
-	empty "github.com/golang/protobuf/ptypes/empty"
-	wrappers "github.com/golang/protobuf/ptypes/wrappers"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
+	emptypb "google.golang.org/protobuf/types/known/emptypb"
+	wrapperspb "google.golang.org/protobuf/types/known/wrapperspb"
 )
 
 // This is a compile-time assertion to ensure that this generated file
@@ -21,9 +21,9 @@ const _ = grpc.SupportPackageIsVersion7
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type ArticleServiceClient interface {
 	GetArticle(ctx context.Context, in *GetArticleRequest, opts ...grpc.CallOption) (*Article, error)
-	GetArticles(ctx context.Context, in *empty.Empty, opts ...grpc.CallOption) (ArticleService_GetArticlesClient, error)
-	WriteArticle(ctx context.Context, in *WriteArticleRequest, opts ...grpc.CallOption) (*wrappers.BoolValue, error)
-	SaveArticleAsDraft(ctx context.Context, in *WriteArticleRequest, opts ...grpc.CallOption) (*wrappers.BoolValue, error)
+	GetArticles(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (ArticleService_GetArticlesClient, error)
+	WriteArticle(ctx context.Context, in *WriteArticleRequest, opts ...grpc.CallOption) (*wrapperspb.BoolValue, error)
+	SaveArticleAsDraft(ctx context.Context, in *WriteArticleRequest, opts ...grpc.CallOption) (*wrapperspb.BoolValue, error)
 }
 
 type articleServiceClient struct {
@@ -43,7 +43,7 @@ func (c *articleServiceClient) GetArticle(ctx context.Context, in *GetArticleReq
 	return out, nil
 }
 
-func (c *articleServiceClient) GetArticles(ctx context.Context, in *empty.Empty, opts ...grpc.CallOption) (ArticleService_GetArticlesClient, error) {
+func (c *articleServiceClient) GetArticles(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (ArticleService_GetArticlesClient, error) {
 	stream, err := c.cc.NewStream(ctx, &ArticleService_ServiceDesc.Streams[0], "/article_service.ArticleService/GetArticles", opts...)
 	if err != nil {
 		return nil, err
@@ -75,8 +75,8 @@ func (x *articleServiceGetArticlesClient) Recv() (*ArticleSummary, error) {
 	return m, nil
 }
 
-func (c *articleServiceClient) WriteArticle(ctx context.Context, in *WriteArticleRequest, opts ...grpc.CallOption) (*wrappers.BoolValue, error) {
-	out := new(wrappers.BoolValue)
+func (c *articleServiceClient) WriteArticle(ctx context.Context, in *WriteArticleRequest, opts ...grpc.CallOption) (*wrapperspb.BoolValue, error) {
+	out := new(wrapperspb.BoolValue)
 	err := c.cc.Invoke(ctx, "/article_service.ArticleService/WriteArticle", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -84,8 +84,8 @@ func (c *articleServiceClient) WriteArticle(ctx context.Context, in *WriteArticl
 	return out, nil
 }
 
-func (c *articleServiceClient) SaveArticleAsDraft(ctx context.Context, in *WriteArticleRequest, opts ...grpc.CallOption) (*wrappers.BoolValue, error) {
-	out := new(wrappers.BoolValue)
+func (c *articleServiceClient) SaveArticleAsDraft(ctx context.Context, in *WriteArticleRequest, opts ...grpc.CallOption) (*wrapperspb.BoolValue, error) {
+	out := new(wrapperspb.BoolValue)
 	err := c.cc.Invoke(ctx, "/article_service.ArticleService/SaveArticleAsDraft", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -98,9 +98,9 @@ func (c *articleServiceClient) SaveArticleAsDraft(ctx context.Context, in *Write
 // for forward compatibility
 type ArticleServiceServer interface {
 	GetArticle(context.Context, *GetArticleRequest) (*Article, error)
-	GetArticles(*empty.Empty, ArticleService_GetArticlesServer) error
-	WriteArticle(context.Context, *WriteArticleRequest) (*wrappers.BoolValue, error)
-	SaveArticleAsDraft(context.Context, *WriteArticleRequest) (*wrappers.BoolValue, error)
+	GetArticles(*emptypb.Empty, ArticleService_GetArticlesServer) error
+	WriteArticle(context.Context, *WriteArticleRequest) (*wrapperspb.BoolValue, error)
+	SaveArticleAsDraft(context.Context, *WriteArticleRequest) (*wrapperspb.BoolValue, error)
 	mustEmbedUnimplementedArticleServiceServer()
 }
 
@@ -111,13 +111,13 @@ type UnimplementedArticleServiceServer struct {
 func (UnimplementedArticleServiceServer) GetArticle(context.Context, *GetArticleRequest) (*Article, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetArticle not implemented")
 }
-func (UnimplementedArticleServiceServer) GetArticles(*empty.Empty, ArticleService_GetArticlesServer) error {
+func (UnimplementedArticleServiceServer) GetArticles(*emptypb.Empty, ArticleService_GetArticlesServer) error {
 	return status.Errorf(codes.Unimplemented, "method GetArticles not implemented")
 }
-func (UnimplementedArticleServiceServer) WriteArticle(context.Context, *WriteArticleRequest) (*wrappers.BoolValue, error) {
+func (UnimplementedArticleServiceServer) WriteArticle(context.Context, *WriteArticleRequest) (*wrapperspb.BoolValue, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method WriteArticle not implemented")
 }
-func (UnimplementedArticleServiceServer) SaveArticleAsDraft(context.Context, *WriteArticleRequest) (*wrappers.BoolValue, error) {
+func (UnimplementedArticleServiceServer) SaveArticleAsDraft(context.Context, *WriteArticleRequest) (*wrapperspb.BoolValue, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SaveArticleAsDraft not implemented")
 }
 func (UnimplementedArticleServiceServer) mustEmbedUnimplementedArticleServiceServer() {}
@@ -152,7 +152,7 @@ func _ArticleService_GetArticle_Handler(srv interface{}, ctx context.Context, de
 }
 
 func _ArticleService_GetArticles_Handler(srv interface{}, stream grpc.ServerStream) error {
-	m := new(empty.Empty)
+	m := new(emptypb.Empty)
 	if err := stream.RecvMsg(m); err != nil {
 		return err
 	}

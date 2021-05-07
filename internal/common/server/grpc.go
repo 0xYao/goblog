@@ -5,14 +5,10 @@ import (
 	"log"
 	"net"
 
-	"github.com/spf13/viper"
 	"google.golang.org/grpc"
 )
 
-func RunGrpcServer(registerServer func(server *grpc.Server)) {
-	// TODO: use a config management library like viper to handle the config values
-	port := viper.GetString("PORT")
-
+func RunGrpcServer(port string, registerServer func(server *grpc.Server)) {
 	addr := fmt.Sprintf(":%s", port)
 	RunGrpcServerOnAddr(addr, registerServer)
 }

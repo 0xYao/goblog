@@ -1,6 +1,8 @@
 package main
 
 import (
+	"0AlexZhong0/goblog/config"
+	"0AlexZhong0/goblog/internal/client"
 	"0AlexZhong0/goblog/internal/data"
 	pb "0AlexZhong0/goblog/internal/generated/api/protobuf/user_service"
 
@@ -10,11 +12,6 @@ import (
 
 	"github.com/bxcodec/faker/v3"
 	"github.com/google/uuid"
-	"google.golang.org/grpc"
-)
-
-var (
-	serverAddr = "localhost:50051"
 )
 
 func generateFakeCreateUserRequest() *pb.CreateUserRequest {
@@ -49,26 +46,15 @@ func insertUser(c pb.UserServiceClient, in *pb.CreateUserRequest) {
 	log.Println("Inserted the user successfully")
 }
 
-func deleteUser(c pb.UserServiceClient, userId string) {
-	ctx := context.Background()
-
-	_, err := c.DeleteUser(ctx, &pb.DeleteUserRequest{Id: userId})
-	if err != nil {
-		log.Println(err)
-		return
-	}
-
-	log.Println("Deleted the user successfully")
-}
-
 func main() {
-	conn, err := grpc.Dial(serverAddr, grpc.WithInsecure(), grpc.WithBlock())
-	if err != nil {
-		log.Fatalf("failed to dial user service: %v", err)
-	}
+	config.LoadConfig()
+	userClient, closeUserClientConn, err := client.NewUserClient()
 
-	defer conn.Close()
-	userClient := pb.NewUserServiceClient(conn)
+	defer closeUserClientConn()
+
+	if err != nil {
+		panic(err)
+	}
 
 	// interacting with the server
 	userNums := 3
@@ -82,15 +68,6 @@ func main() {
 		insertUser(userClient, req)
 	}
 
-	for _, item := range createUserRequests {
-		printUser(userClient, item.Id)
-	}
-
-	for _, item := range createUserRequests {
-		deleteUser(userClient, item.Id)
-	}
-
-	// expect all the user to be nil
 	for _, item := range createUserRequests {
 		printUser(userClient, item.Id)
 	}

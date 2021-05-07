@@ -1,10 +1,11 @@
 # Prerequisites
 
-- Install the protocol buffer compiler `protoc`
+- Install the [protocol buffer](https://grpc.io/docs/protoc-installation/) compiler `protoc`
+- Install [air](https://github.com/cosmtrek/air) for live reload
 
 # Get Started
 
-All services are inside the `internal` directory. For example, to start the `ArticleService` from the root directory, run `go run internal/articles/main.go`. Then initialize the client to invocate service methods with `go run clients/article_client/main.go`
+Assuming the `air` package is installed, to start the app, e.g. all internal services, run `air` in the root project directory. The `clients` folder contains the code that interacts with server, for example, try `go run clients/user_client/main.go` to interact with the user grpc server.
 
 # Overview
 
@@ -16,7 +17,7 @@ All services are inside the `internal` directory. For example, to start the `Art
 
 # TODO
 
-- Reimplement the ArticleService so it interacts with the UserService (see how it is implemented in the WildWorkout project)
+- Debug the segmentation error when calling the `article_client/main.go`
 - Implement the reposeitory using MongoDB
 - Deploy the services and the db and write terraform code for it
 - Stage the client and the server

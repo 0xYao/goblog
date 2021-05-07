@@ -5,12 +5,19 @@ package user_service;
 option go_package = "0AlexZhong0/goblog/api/protobuf/user_service";
 
 import "google/protobuf/wrappers.proto";
+import "google/protobuf/empty.proto";
 
 service UserService {
   rpc GetUser (GetUserRequest) returns (User);
+  rpc GetUsers (google.protobuf.Empty) returns (stream User);
+  rpc UserExists (UserExistsRequest) returns (google.protobuf.BoolValue);
   rpc UpdateUser (UpdateUserRequest) returns (google.protobuf.BoolValue);
   rpc DeleteUser (DeleteUserRequest) returns (google.protobuf.BoolValue);
   rpc CreateUser (CreateUserRequest) returns (google.protobuf.BoolValue);
+}
+
+message UserExistsRequest {
+  string id = 1;
 }
 
 message GetUserRequest {

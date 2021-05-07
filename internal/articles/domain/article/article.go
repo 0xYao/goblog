@@ -12,6 +12,7 @@ type Article struct {
 	id         string
 	body       string
 	title      string
+	userId     string
 	isDraft    bool
 	coverImage string
 	createdAt  time.Time
@@ -20,6 +21,10 @@ type Article struct {
 // getters
 func (a *Article) Id() string {
 	return a.id
+}
+
+func (a *Article) UserId() string {
+	return a.userId
 }
 
 func (a *Article) IsDraft() bool {
@@ -54,6 +59,7 @@ type NewArticleInput struct {
 	Title      string
 	IsDraft    bool
 	CoverImage string
+	UserId     string
 }
 
 func (f Factory) NewArticle(in *NewArticleInput) (*Article, error) {
@@ -69,12 +75,28 @@ func (f Factory) NewArticle(in *NewArticleInput) (*Article, error) {
 		return nil, errors.New("article cover image is empty")
 	}
 
+	if in.UserId == "" {
+		return nil, errors.New("user id is empty")
+	}
+
 	return &Article{
 		id:         uuid.NewString(),
 		body:       in.Body,
 		title:      in.Title,
 		isDraft:    in.IsDraft,
+		userId:     in.UserId,
 		coverImage: in.CoverImage,
 		createdAt:  time.Now(),
 	}, nil
+}
+
+// validators
+func IsArticleTitleUnique(title string, articles []*Article) error {
+	for _, a := range articles {
+		if title == a.title {
+			return errors.New("article title already exists")
+		}
+	}
+
+	return nil
 }

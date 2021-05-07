@@ -1,29 +1,26 @@
 package main
 
 import (
-	"flag"
 	"io"
 	"log"
 	"time"
 
+	"0AlexZhong0/goblog/config"
+	"0AlexZhong0/goblog/internal/client"
 	"0AlexZhong0/goblog/internal/data"
-	pb "0AlexZhong0/goblog/internal/generated/api/protobuf/article_service"
+	articlePb "0AlexZhong0/goblog/internal/generated/api/protobuf/article_service"
+	"0AlexZhong0/goblog/internal/generated/api/protobuf/user_service"
 
 	"github.com/bxcodec/faker/v3"
 	"golang.org/x/net/context"
-	"google.golang.org/grpc"
 	"google.golang.org/protobuf/types/known/emptypb"
 )
 
-var (
-	serverAddr = flag.String("server_addr", "localhost:50051", "The server address in the format of host:port")
-)
-
-func printArticle(client pb.ArticleServiceClient, articleId string) {
+func printArticle(client articlePb.ArticleServiceClient, articleId string) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
-	article, err := client.GetArticle(ctx, &pb.GetArticleRequest{ArticleId: articleId})
+	article, err := client.GetArticle(ctx, &articlePb.GetArticleRequest{ArticleId: articleId})
 	if err != nil {
 		log.Fatalf("Failed to get article, %v", err)
 	}
@@ -31,7 +28,7 @@ func printArticle(client pb.ArticleServiceClient, articleId string) {
 	log.Println(article)
 }
 
-func printArticles(client pb.ArticleServiceClient) {
+func printArticles(client articlePb.ArticleServiceClient) {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 	stream, err := client.GetArticles(ctx, &emptypb.Empty{})
@@ -53,7 +50,7 @@ func printArticles(client pb.ArticleServiceClient) {
 	}
 }
 
-func writeArticle(client pb.ArticleServiceClient, in *pb.WriteArticleRequest) {
+func writeArticle(client articlePb.ArticleServiceClient, in *articlePb.WriteArticleRequest) {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
@@ -70,34 +67,67 @@ func writeArticle(client pb.ArticleServiceClient, in *pb.WriteArticleRequest) {
 	}
 }
 
-func generateFakeArticle() *pb.WriteArticleRequest {
-	return &pb.WriteArticleRequest{
+func generateFakeArticle() *articlePb.WriteArticleRequest {
+	return &articlePb.WriteArticleRequest{
 		Title:      faker.Word(),
 		Body:       faker.Paragraph(),
 		CoverImage: data.RandomImageUrl,
 	}
 }
 
-func main() {
-	log.Println("Setting up the article client...")
+func getUsers(userClient user_service.UserServiceClient) []*user_service.User {
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
 
-	conn, err := grpc.Dial(*serverAddr, grpc.WithInsecure(), grpc.WithBlock())
-
-	log.Printf("Dialing at %v\n", serverAddr)
+	users := make([]*user_service.User, 0)
+	stream, err := userClient.GetUsers(ctx, &emptypb.Empty{})
 
 	if err != nil {
-		log.Fatalf("failed to dial: %v", err)
+		return users
 	}
 
-	defer conn.Close()
-	client := pb.NewArticleServiceClient(conn)
+	for {
+		user, err := stream.Recv()
+		if err == io.EOF {
+			break
+		}
 
-	articleNums := 3
+		if err != nil {
+			return users
+		}
 
-	for i := 0; i < articleNums; i++ {
-		writeArticle(client, generateFakeArticle())
+		users = append(users, user)
 	}
 
-	printArticles(client)
-	printArticle(client, "abcd")
+	return users
+}
+
+func main() {
+	config.LoadConfig()
+	// userClient, closeUserClientConn, err := client.NewUserClient()
+
+	// defer closeUserClientConn()
+
+	// if err != nil {
+	// 	panic(err)
+	// }
+
+	articleClient, closeArticleClientConn, err := client.NewArticleClient()
+	defer closeArticleClientConn()
+
+	if err != nil {
+		panic(err)
+	}
+
+	// users := getUsers(userClient)
+	// log.Println(users)
+
+	// articleNums := 3
+
+	// for i := 0; i < articleNums; i++ {
+	// 	writeArticle(client, generateFakeArticle())
+	// }
+
+	printArticles(articleClient)
+	printArticle(articleClient, "abcd")
 }

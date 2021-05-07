@@ -3,6 +3,7 @@ package adapters
 import (
 	"0AlexZhong0/goblog/internal/users/domain/user"
 	"context"
+	"errors"
 	"sync"
 )
 
@@ -80,6 +81,26 @@ func (m *MemoryUserRepository) DeleteUser(ctx context.Context, userId string) er
 
 	delete(m.users, userId)
 	return nil
+}
+
+func (m *MemoryUserRepository) UserExists(ctx context.Context, userId string) error {
+	for id := range m.users {
+		if id == userId {
+			return nil
+		}
+	}
+
+	return errors.New("user does not exist")
+}
+
+func (m *MemoryUserRepository) GetUsers(ctx context.Context) []*user.User {
+	users := make([]*user.User, len(m.users))
+
+	for _, user := range m.users {
+		users = append(users, user)
+	}
+
+	return users
 }
 
 func NewMemoryUserRepository(f user.Factory) *MemoryUserRepository {

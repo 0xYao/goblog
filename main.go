@@ -1,55 +1,27 @@
 package main
 
 import (
-	"fmt"
+	"0AlexZhong0/goblog/config"
+	"0AlexZhong0/goblog/internal/articles"
+	"0AlexZhong0/goblog/internal/users"
 	"sync"
-	"time"
 )
 
-// NOTE: this is a playground file
 func main() {
-	lock := sync.RWMutex{}
+	// start all servers
+	config.LoadConfig()
+	wg := new(sync.WaitGroup)
+	wg.Add(2)
 
-	b := map[string]int{}
-	b["0"] = 0
+	go func() {
+		articles.Run()
+		wg.Done()
+	}()
 
-	go func(i int) {
-		lock.RLock()
-		fmt.Printf("RLock: from go routine %d: b = %d\n", i, b["0"])
-		time.Sleep(time.Second * 3)
-		fmt.Printf("RLock: from go routine %d: lock released\n", i)
-		lock.RUnlock()
-	}(1)
+	go func() {
+		users.Run()
+		wg.Done()
+	}()
 
-	go func(i int) {
-		lock.Lock()
-		b["2"] = i
-		fmt.Printf("Lock: from go routine %d: b = %d\n", i, b["2"])
-		time.Sleep(time.Second * 3)
-		fmt.Printf("Lock: from go routine %d: lock released\n", i)
-		lock.Unlock()
-	}(2)
-
-	<-time.After(time.Second * 8)
-
-	fmt.Println("*************************************8")
-
-	go func(i int) {
-		lock.Lock()
-		b["3"] = i
-		fmt.Printf("Lock: from go routine %d: b = %d\n", i, b["3"])
-		time.Sleep(time.Second * 3)
-		fmt.Printf("Lock: from go routine %d: lock released\n", i)
-		lock.Unlock()
-	}(3)
-
-	go func(i int) {
-		lock.RLock()
-		fmt.Printf("RLock: from go routine %d: b = %d\n", i, b["3"])
-		time.Sleep(time.Second * 3)
-		fmt.Printf("RLock: from go routine %d: lock released\n", i)
-		lock.RUnlock()
-	}(4)
-
-	<-time.After(time.Second * 8)
+	wg.Wait()
 }

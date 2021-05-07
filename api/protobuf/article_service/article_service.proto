@@ -23,7 +23,8 @@ message GetArticleRequest {
 message WriteArticleRequest {
   string body = 2;
   string title = 1;
-  string coverImage = 3;
+  string userId = 3;
+  string coverImage = 4;
 }
 
 // responses
@@ -33,7 +34,8 @@ message Article {
   string title = 3;
   bool isDraft = 4;
   string coverImage = 5;
-  google.protobuf.Timestamp createdAt = 6;
+  string userId = 6;
+  google.protobuf.Timestamp createdAt = 7;
 }
 
 message ArticleSummary {

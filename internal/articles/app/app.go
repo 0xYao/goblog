@@ -5,6 +5,7 @@ import (
 	"0AlexZhong0/goblog/internal/articles/app/command"
 	"0AlexZhong0/goblog/internal/articles/app/query"
 	"0AlexZhong0/goblog/internal/articles/domain/article"
+	"0AlexZhong0/goblog/internal/client"
 	"context"
 )
 
@@ -22,7 +23,7 @@ type Queries struct {
 	GetArticles query.ArticlesHandler
 }
 
-func NewApplication(ctx context.Context) Application {
+func NewApplication(ctx context.Context) (Application, func()) {
 	articleFactory, err := article.NewFactory()
 	if err != nil {
 		panic(err)
@@ -30,15 +31,24 @@ func NewApplication(ctx context.Context) Application {
 
 	// swap out the repo here if we wish to change the database
 	articleRepo := adapters.NewMemoryArticleRepository(articleFactory)
+	userClient, closeUserClient, err := client.NewUserClient()
+
+	if err != nil {
+		panic(err)
+	}
+
+	userGrpc := adapters.NewUserGrpc(userClient)
 
 	return Application{
-		Commands: Commands{
-			AddArticles: command.NewAddArticlesHandler(articleRepo),
-		},
+			Commands: Commands{
+				AddArticles: command.NewAddArticlesHandler(articleRepo, userGrpc),
+			},
 
-		Queries: Queries{
-			GetArticle:  query.NewArticleHandler(articleRepo),
-			GetArticles: query.NewArticlesHandler(articleRepo),
-		},
-	}
+			Queries: Queries{
+				GetArticle:  query.NewArticleHandler(articleRepo),
+				GetArticles: query.NewArticlesHandler(articleRepo),
+			},
+		}, func() {
+			_ = closeUserClient()
+		}
 }

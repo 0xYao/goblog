@@ -14,6 +14,16 @@ type MemoryArticleRepository struct {
 	articleFactory article.Factory
 }
 
+func (m *MemoryArticleRepository) getValuesFromArticleMap() []*article.Article {
+	articleArray := make([]*article.Article, len(m.articles))
+
+	for _, a := range m.articles {
+		articleArray = append(articleArray, a)
+	}
+
+	return articleArray
+}
+
 func NewMemoryArticleRepository(articleFactory article.Factory) *MemoryArticleRepository {
 	return &MemoryArticleRepository{
 		lock:           &sync.RWMutex{},
@@ -53,16 +63,16 @@ func (m *MemoryArticleRepository) AddArticle(ctx context.Context, in *article.Ne
 	m.lock.Lock()
 	defer m.lock.Unlock()
 
+	articleArray := m.getValuesFromArticleMap()
+
 	// validation
-	for _, article := range m.articles {
-		if article.Title() == in.Title {
-			return errors.New("artile title already exists")
-		}
+	if err := article.IsArticleTitleUnique(in.Title, articleArray); err != nil {
+		return err
 	}
 
 	newArticle, err := m.articleFactory.NewArticle(in)
 	if err != nil {
-		return errors.New("article input is incorrect")
+		return err
 	}
 
 	// add the article
